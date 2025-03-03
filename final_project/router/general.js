@@ -34,17 +34,20 @@ public_users.get('/isbn/:isbn',function (req, res) {
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  const author = req.params.author;
+  const author = req.params.author.toLowerCase();
   const Byauthor = [];
-  for (let i = 0; i < books.length; i++){
-    if(books[i].author === author){
-
-        Byauthor.push(books[i]);
+  for (const key in books) {
+    if (books.hasOwnProperty(key)) {
+      const book = books[key];
+      if (book.author.toLowerCase() === author) {
+        ByAuthor.push(book);
+      }
     }
-    }
+  }
   if (Byauthor.length > 0){
     res.send(JSON.stringify(Byauthor,null, 4));
-  }  else {
+  }  
+  else {
     res.status(404).send('No books found by this author');
   }
 
