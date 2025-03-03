@@ -40,7 +40,7 @@ public_users.get('/author/:author',function (req, res) {
     if (books.hasOwnProperty(key)) {
       const book = books[key];
       if (book.author.toLowerCase() === author) {
-        ByAuthor.push(book);
+        Byauthor.push(book);
       }
     }
   }
@@ -49,6 +49,7 @@ public_users.get('/author/:author',function (req, res) {
   }  
   else {
     res.status(404).send('No books found by this author');
+    console.log('book:', Byauthor )
   }
 
 });
@@ -56,21 +57,37 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  const title = req.params.title;
-  const Bytitle = books[title];
-  if(Bytitle){
-    res.send(JSON.stringify(Bytitle, null, 4));
+  const title = req.params.title.toLowerCase();
+  const Bytitle = [];
+  for (const key in books) {
+    if (books.hasOwnProperty(key)) {
+      const book = books[key];
+      if (book.title.toLowerCase() === title) {
+        Bytitle.push(book);
+      }
+    }
   }
+  if (Bytitle.length > 0){
+    res.send(JSON.stringify(Bytitle,null, 4));
+  }  
   else {
-    res.status(404).send('Book not found');
+    res.status(404).send('No books found with this title.');
   }
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
+  const isbn = req.params.isbn;
+  const bookreview = books[isbn];
+  if (bookreview){
+    //works
+    res.send(JSON.stringify(bookreview.reviews, null, 4));
+  }
+  else{
+    res.status(404).send('Review not found');
+  }
+ });
 
-  return res.status(300).json({message: "Yet to be implemented"});
-});
 
 module.exports.general = public_users;
