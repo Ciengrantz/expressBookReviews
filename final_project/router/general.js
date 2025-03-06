@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
 
 
 public_users.post("/register", (req,res) => {
@@ -23,7 +24,17 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  res.send(JSON.stringify(books,null,4));
+  return new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        resolve(books)
+    }, 5000);
+  })
+  .then((books)=>{
+    res.send(JSON.stringify(books,null,4));
+  })
+  .catch((error)=>{
+    res.status(500).send('Error fetching books');
+  });
 });
 
 
@@ -32,13 +43,25 @@ public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   const bookDetails = books[isbn];
-  if (bookDetails){
+return new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        if (bookDetails) {
+            resolve(bookDetails);
+        }
+        else {
+            reject("Book not found");
+        }
+     }, 1000);
+})
+  .then((bookDetails) =>{
+
     res.send(JSON.stringify(bookDetails, null, 4));
-  }
-  else{
-    res.status(404).send('Book not found');
-  }
- });
+
+  })  
+  .catch((error)=>{
+    res.status(404).send(error);
+  });
+});
 
   
 // Get book details based on author
