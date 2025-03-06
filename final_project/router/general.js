@@ -25,9 +25,8 @@ public_users.post("/register", (req,res) => {
 public_users.get('/',function (req, res) {
   //Write your code here
   return new Promise((resolve, reject) => {
-    setTimeout(()=>{
         resolve(books)
-    }, 5000);
+  // removed timeout
   })
   .then((books)=>{
     res.send(JSON.stringify(books,null,4));
@@ -69,22 +68,35 @@ public_users.get('/author/:author',function (req, res) {
   //Write your code here
   const author = req.params.author.toLowerCase();
   const Byauthor = [];
-  for (const key in books) {
-    if (books.hasOwnProperty(key)) {
-      const book = books[key];
-      if (book.author.toLowerCase() === author) {
-        Byauthor.push(book);
-      }
+  return new Promise((resolve, reject) => {
+    if (Byauthor){
+        resolve(Byauthor)
+    }else {
+        reject("Author not found")
     }
-  }
-  if (Byauthor.length > 0){
-    res.send(JSON.stringify(Byauthor,null, 4));
-  }  
-  else {
-    res.status(404).send('No books found by this author');
-    console.log('book:', Byauthor )
-  }
+  })
+  .then((Byauthor)=>{
+    for (const key in books) {
+        if (books.hasOwnProperty(key)) {
+          const book = books[key];
+          if (book.author.toLowerCase() === author) {
+            Byauthor.push(book);
+          }
+        }
+      }
+      if (Byauthor.length > 0){
+        res.send(JSON.stringify(Byauthor,null, 4));
+      }  
+      else {
+        res.status(404).send('No books found by this author');
+      }
+    
 
+    
+  })
+  .catch((error)=>{
+    res.status(404).send(error);
+  })
 });
 
 // Get all books based on title
@@ -92,22 +104,32 @@ public_users.get('/title/:title',function (req, res) {
   //Write your code here
   const title = req.params.title.toLowerCase();
   const Bytitle = [];
-  for (const key in books) {
-    if (books.hasOwnProperty(key)) {
-      const book = books[key];
-      if (book.title.toLowerCase() === title) {
-        Bytitle.push(book);
-      }
+  return new Promise((resolve, reject) => {
+    if (Bytitle){
+        resolve(Bytitle)
+    }else {
+        reject("Author not found")
     }
-  }
-  if (Bytitle.length > 0){
-    res.send(JSON.stringify(Bytitle,null, 4));
-  }  
-  else {
-    res.status(404).send('No books found with this title.');
-  }
+  })
+  .then((Bytitle)=>{
+    for (const key in books) {
+        if (books.hasOwnProperty(key)) {
+          const book = books[key];
+          if (book.title.toLowerCase() === title) {
+            Bytitle.push(book);
+          }
+        }
+      }
+      if (Bytitle.length > 0){
+        res.send(JSON.stringify(Bytitle,null, 4));
+      }  else {
+        res.status(404).send('No books found by this title.');
+      }
+  })
+  .catch((error)=>{
+    res.status(404).send(error);
+  })
 });
-
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
@@ -115,7 +137,7 @@ public_users.get('/review/:isbn',function (req, res) {
   const bookreview = books[isbn];
   if (bookreview){
     //works
-    res.send(JSON.stringify(bookreview.reviews, null, 4));
+    res.send(JSON.stringify("Review:" + bookreview.reviews, null, 4));
   }
   else{
     res.status(404).send('Review not found');
